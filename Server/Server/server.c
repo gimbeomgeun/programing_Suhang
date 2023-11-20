@@ -5,6 +5,7 @@
 #include <time.h>
 #include <windows.h>
 #include <conio.h>
+#include "Queue.h"
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -107,6 +108,10 @@ struct rank
 }typedef rank;
 rank List[11];
 
+
+int minobag1[7] = { 0,1,2,3,4,5,6 };
+int minobag2[7] = { 0,1,2,3,4,5,6 };
+
 void rotate_block();      //블록 회전
 int is_crash(int d, int s);           //내려갈 때 충돌판정
 int is_FullLine();     //한줄완성판별
@@ -129,6 +134,17 @@ int change_Ranking();
 int print_Ranking();
 int hard_drop(int d, int s);
 int color(int code);
+void createGarbageLine(int x);
+void shuffle(int arr[], int size);
+void minobagPush();
+void isMinobagEmpty();
+
+void gotoxy(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 //socket connect varialble
 WSADATA wsa;
@@ -138,6 +154,9 @@ int clientAddrLen = sizeof(client);
 char message[1000];
 
 int receivedLine=0;
+//받은 줄 수 를 저장할 Queue
+Queue LineQueue;
+
 DWORD WINAPI ReceiveLine(LPVOID lpParam);
 
 int main() {
@@ -189,7 +208,7 @@ int main() {
         perror("Error creating thread");
         return 1;
     }
-
+    initQueue(&LineQueue);
     create_area();
     create_block();
 
@@ -244,6 +263,42 @@ DWORD WINAPI ReceiveLine(LPVOID lpParam)
 
 //game functions..
 
+void shuffle(int arr[], int size) {
+    // 배열의 끝부터 시작하여 랜덤한 위치의 원소와 교환
+    for (int i = size - 1; i > 0; --i) {
+        // 0에서 i까지의 랜덤한 인덱스 선택
+        int j = rand() % (i + 1);
+
+        // arr[i]와 arr[j]를 교환
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+void minobagPush()
+{
+    for (int i = 0; i < 6; i++)
+        minobag1[i] = minobag1[i + 1];
+    minobag1[6] = minobag2[0];
+    for (int i = 0; i < 6; i++)
+        minobag2[i] = minobag2[i + 1];
+    minobag2[6] = -1;
+}
+
+void isMinobagEmpty()
+{
+    for (int i = 0; i < 7; i++)
+    {
+        if (minobag2[i] != -1)
+            return;
+    }
+    for (int i = 0; i < 7; i++)
+    {
+        minobag2[i] = i;
+    }
+    shuffle(minobag2, 7);
+}
 int color(int code)
 {
     switch (code)
@@ -283,23 +338,7 @@ void area_init(int r, int d, int s)
 void print_area()
 {
     system("cls");
-    printf("%d %d\n", hard_y, hard_x);
-    for (int i = 0; i < BLOCK_ROW; i++)
-    {
-        for (int j = 0; j < BLOCK_COL; j++)
-        {
-            if (now_block[i][j] == 0)
-            {
-                printf("□");
-            }
-            else
-            {
-                printf("■");
-            }
-        }
-        printf("\n");
-    }
-    printf("score : %d\n\n\n", score);
+
     for (int i = 0; i < AREA_ROW; i++)
     {
         for (int j = 0; j < AREA_COL + 2; j++)
@@ -323,6 +362,27 @@ void print_area()
         }
         printf("\n");
     }
+
+    for (int k = 0; k < 5; k++)
+    {
+        for (int i = 0; i < BLOCK_ROW; i++)
+        {
+            gotoxy(25, k * 4 + i);
+            for (int j = 0; j < BLOCK_COL; j++)
+            {
+                if (block[minobag1[k]][i][j] == 0)
+                {
+                    printf("□");
+                }
+                else
+                {
+                    printf("■");
+                }
+            }
+            printf("\n");
+        }
+    }
+
 }
 
 int hard_drop(int d, int s)
@@ -364,8 +424,8 @@ void create_area()
             }
         }
     }
-
-
+    shuffle(minobag1, 7);
+    shuffle(minobag2, 7);
     print_area();
 }
 int create_block()
@@ -374,8 +434,11 @@ int create_block()
     cnt = 0;
     area_change();
     is_Fullline();
+    createGarbageLine(dequeue(&LineQueue)); //블록 놓을 때 마다 가비지 라인 스택 하나씩 받아와서 생성
     area_change();
-    r = (rand() % 7);   //랜덤으로 7개 블록 중 하나 결정
+    r = minobag1[0];
+    minobagPush();
+    isMinobagEmpty();
     block_change(r);
     hard_drop(0, 0);
     return block_down(r, 0, 0);     //블록내리기
@@ -414,7 +477,9 @@ int block_down(int r, int d, int s)
         if (receivedLine)
         {
             printf("\n%d\n", receivedLine);
-            scanf("%d", &receivedLine);
+            enqueue(&LineQueue, receivedLine);
+
+            receivedLine = 0;
         }
         int ans = input();      //사용자입력받기
         if (ans == 1 || ans == -1)
@@ -685,6 +750,28 @@ int line_down(int d)
     return is_Fullline();
 }
 
+
+void createGarbageLine(int x)
+{
+    if (x == -1) return;  //큐에 있는 라인 값이 없을 때
+
+    for (int i = x; i < AREA_ROW; i++)  //받은 칸 만큼 위로 이동
+    {
+        for (int j = 1; j < AREA_COL + 1; j++)
+        {
+            area[i - x][j] = area[i][j];
+        }
+    }
+    int hall = rand() % 10+1;
+    for (int i = 0; i < x; i++) //받은 칸 만큼 가비지 라인 생성
+    {
+        for (int j = 1; j < AREA_COL + 1; j++)
+        {
+            if (j==hall) area[AREA_ROW - i - 1][hall] = 0;
+            else area[AREA_ROW - i-1][j] = 4;
+        }
+    }
+}
 
 int is_GameOver()
 {

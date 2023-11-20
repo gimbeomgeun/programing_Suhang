@@ -18,9 +18,12 @@
     <ClCompile Include="client.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Queue.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.h">
+    <ClInclude Include="Queue.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

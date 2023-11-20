@@ -1,0 +1,25 @@
+﻿  server.c
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(201,11): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(436,5): warning C4013: 'is_Fullline'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(598,9): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(599,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(601,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(802,32): warning C4267: '+=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(791,16): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(806,17): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(818,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(819,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(831,21): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(839,16): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(843,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(793,9): warning C4101: 'i' :참조되지 않은 지역 변수입니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(865,32): warning C4267: '+=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(854,16): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(856,9): warning C4101: 'i' :참조되지 않은 지역 변수입니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(321): warning C4715: 'color': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(405): warning C4715: 'hard_drop': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(739): warning C4715: 'is_Fullline': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(787): warning C4715: 'is_GameOver': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(874): warning C4716: 'print_Ranking': 값을 반환해야 합니다.
+C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\Server\server.c(848): warning C4716: 'change_Ranking': 값을 반환해야 합니다.
+  Server.vcxproj -> C:\Users\beomgeun\Downloads\programing_Suhang-main\programing_Suhang-main\Server\x64\Debug\Server.exe

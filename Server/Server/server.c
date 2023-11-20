@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <winsock2.h>
@@ -90,7 +90,7 @@ int block[7][BLOCK_ROW][BLOCK_COL] = {
 
 int isGameover = 1;
 
-//Á¡¼ö °ü·Ã º¯¼ö
+//ì ìˆ˜ ê´€ë ¨ ë³€ìˆ˜
 int cnt = 0;
 int score = 0;
 
@@ -101,6 +101,8 @@ int fast_block[BLOCK_ROW][BLOCK_COL];
 int hard_y = 0, hard_x = 0;
 
 int r;
+int ishold = 0;
+int hold=-1;
 struct rank
 {
     char name[20];
@@ -112,18 +114,18 @@ rank List[11];
 int minobag1[7] = { 0,1,2,3,4,5,6 };
 int minobag2[7] = { 0,1,2,3,4,5,6 };
 
-void rotate_block();      //ºí·Ï È¸Àü
-int is_crash(int d, int s);           //³»·Á°¥ ¶§ Ãæµ¹ÆÇÁ¤
-int is_FullLine();     //ÇÑÁÙ¿Ï¼ºÆÇº°
-int block_down(int r, int d, int s);        //ºí·Ï³»¸®±â
-int input();       //»ç¿ëÀÚÀÔ·Â
-int create_block();     //·£´ıÀ¸·Î ºí·Ï»ı¼º
-void print_area();      //È­¸éÃâ·Â
-void area_init(int r, int d, int s);//È­¸é ÃÊ±âÈ­
-void area_change();     //¿ÇÀº °ªÀÌ¸é °ú°Å¸¦ ÇöÀç·Î¹Ù²Ù±â
-void r_area_change();      //Àß¸øµÈ °ªÀÌ¸é ÇöÀç¸¦ ¿ÇÀº°ªÀÎ °ú°Å·Î ¹Ù²Ù±â
-int block_side(int r, int d, int s, int lr);    //ºí·Ï ¿·À¸·ÎÀÌµ¿
-int is_crash2(int d, int s);    //¿·À¸·Î ÀÌµ¿ÇÒ¶§ Ãæµ¹ÆÇÁ¤
+void rotate_block();      //ë¸”ë¡ íšŒì „
+int is_crash(int d, int s);           //ë‚´ë ¤ê°ˆ ë•Œ ì¶©ëŒíŒì •
+int is_FullLine();     //í•œì¤„ì™„ì„±íŒë³„
+int block_down(int r, int d, int s);        //ë¸”ë¡ë‚´ë¦¬ê¸°
+int input();       //ì‚¬ìš©ìì…ë ¥
+int create_block();     //ëœë¤ìœ¼ë¡œ ë¸”ë¡ìƒì„±
+void print_area();      //í™”ë©´ì¶œë ¥
+void area_init(int r, int d, int s);//í™”ë©´ ì´ˆê¸°í™”
+void area_change();     //ì˜³ì€ ê°’ì´ë©´ ê³¼ê±°ë¥¼ í˜„ì¬ë¡œë°”ê¾¸ê¸°
+void r_area_change();      //ì˜ëª»ëœ ê°’ì´ë©´ í˜„ì¬ë¥¼ ì˜³ì€ê°’ì¸ ê³¼ê±°ë¡œ ë°”ê¾¸ê¸°
+int block_side(int r, int d, int s, int lr);    //ë¸”ë¡ ì˜†ìœ¼ë¡œì´ë™
+int is_crash2(int d, int s);    //ì˜†ìœ¼ë¡œ ì´ë™í• ë•Œ ì¶©ëŒíŒì •
 void block_change();
 void block_change2();
 void r_block_change();
@@ -153,8 +155,8 @@ struct sockaddr_in server, client;
 int clientAddrLen = sizeof(client);
 char message[1000];
 
-int receivedLine=0;
-//¹ŞÀº ÁÙ ¼ö ¸¦ ÀúÀåÇÒ Queue
+int receivedLine = 0;
+//ë°›ì€ ì¤„ ìˆ˜ ë¥¼ ì €ì¥í•  Queue
 Queue LineQueue;
 
 DWORD WINAPI ReceiveLine(LPVOID lpParam);
@@ -202,7 +204,7 @@ int main() {
 
     HANDLE thread_handle;
 
-    // ½º·¹µå »ı¼º ¹× ½ÇÇà
+    // ìŠ¤ë ˆë“œ ìƒì„± ë° ì‹¤í–‰
     thread_handle = CreateThread(NULL, 0, ReceiveLine, NULL, 0, NULL);
     if (thread_handle == NULL) {
         perror("Error creating thread");
@@ -240,7 +242,7 @@ int main() {
 
     WaitForSingleObject(thread_handle, INFINITE);
 
-    CloseHandle(thread_handle); // ½º·¹µå ÇÚµé ´İ±â
+    CloseHandle(thread_handle); // ìŠ¤ë ˆë“œ í•¸ë“¤ ë‹«ê¸°
 
     printf("Thread finished\n");
 
@@ -264,12 +266,12 @@ DWORD WINAPI ReceiveLine(LPVOID lpParam)
 //game functions..
 
 void shuffle(int arr[], int size) {
-    // ¹è¿­ÀÇ ³¡ºÎÅÍ ½ÃÀÛÇÏ¿© ·£´ıÇÑ À§Ä¡ÀÇ ¿ø¼Ò¿Í ±³È¯
+    // ë°°ì—´ì˜ ëë¶€í„° ì‹œì‘í•˜ì—¬ ëœë¤í•œ ìœ„ì¹˜ì˜ ì›ì†Œì™€ êµí™˜
     for (int i = size - 1; i > 0; --i) {
-        // 0¿¡¼­ i±îÁöÀÇ ·£´ıÇÑ ÀÎµ¦½º ¼±ÅÃ
+        // 0ì—ì„œ iê¹Œì§€ì˜ ëœë¤í•œ ì¸ë±ìŠ¤ ì„ íƒ
         int j = rand() % (i + 1);
 
-        // arr[i]¿Í arr[j]¸¦ ±³È¯
+        // arr[i]ì™€ arr[j]ë¥¼ êµí™˜
         int temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
@@ -317,6 +319,8 @@ int color(int code)
         return DARK_YELLOW;
     case 7:
         return VIOLET;
+    case 8:
+        return GRAY;
     }
 }
 
@@ -348,7 +352,7 @@ void print_area()
             {
                 if (hard_y <= i && i <= hard_y + BLOCK_ROW - 1 && hard_x + CENTER <= j && j <= hard_x + BLOCK_COL + CENTER - 1 && now_block[i - hard_y][j - CENTER - hard_x] != 0)
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color(r + 1));
-                printf("¡à");
+                printf("â–¡");
             }
             else if (now_area[i][j] == -1)
             {
@@ -357,7 +361,7 @@ void print_area()
             else
             {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color(now_area[i][j]));
-                printf("¡á");
+                printf("â– ");
             }
         }
         printf("\n");
@@ -372,11 +376,11 @@ void print_area()
             {
                 if (block[minobag1[k]][i][j] == 0)
                 {
-                    printf("¡à");
+                    printf("â–¡");
                 }
                 else
                 {
-                    printf("¡á");
+                    printf("â– ");
                 }
             }
             printf("\n");
@@ -410,15 +414,15 @@ void create_area()
     {
         for (int j = 0; j < AREA_COL + 2; j++)
         {
-            if (j == 0 || j == AREA_COL + 1)      //¾ç¿· ¸Ç ³¡ 9·Î ¼³Á¤
+            if (j == 0 || j == AREA_COL + 1)      //ì–‘ì˜† ë§¨ ë 9ë¡œ ì„¤ì •
             {
                 area[i][j] = -1, now_area[i][j] = -1;
             }
-            else if (i == AREA_ROW)     //¸Ç ¹Ø 1·Î¼³Á¤ -> Ãæµ¹ÆÇÁ¤À¸·Î ºí·Ï¸ØÃß±â
+            else if (i == AREA_ROW)     //ë§¨ ë°‘ 1ë¡œì„¤ì • -> ì¶©ëŒíŒì •ìœ¼ë¡œ ë¸”ë¡ë©ˆì¶”ê¸°
             {
                 area[i][j] = 1, now_area[i][j] = 1;
             }
-            else        //³ª¸ÓÁö 0
+            else        //ë‚˜ë¨¸ì§€ 0
             {
                 area[i][j] = 0, now_area[i][j] = 0;
             }
@@ -432,16 +436,17 @@ int create_block()
 {
     //send(clientSocket, (char*)&cnt, sizeof(int), 0);
     cnt = 0;
+    ishold = 0;
     area_change();
-    is_Fullline();
-    createGarbageLine(dequeue(&LineQueue)); //ºí·Ï ³õÀ» ¶§ ¸¶´Ù °¡ºñÁö ¶óÀÎ ½ºÅÃ ÇÏ³ª¾¿ ¹Ş¾Æ¿Í¼­ »ı¼º
+    is_FullLine();
+    createGarbageLine(dequeue(&LineQueue)); //ë¸”ë¡ ë†“ì„ ë•Œ ë§ˆë‹¤ ê°€ë¹„ì§€ ë¼ì¸ ìŠ¤íƒ í•˜ë‚˜ì”© ë°›ì•„ì™€ì„œ ìƒì„±
     area_change();
     r = minobag1[0];
     minobagPush();
     isMinobagEmpty();
     block_change(r);
     hard_drop(0, 0);
-    return block_down(r, 0, 0);     //ºí·Ï³»¸®±â
+    return block_down(r, 0, 0);     //ë¸”ë¡ë‚´ë¦¬ê¸°
 }
 
 
@@ -456,7 +461,7 @@ int block_down(int r, int d, int s)
             area[i][j + CENTER + s] += now_block[i - d][j];
         }
     }
-    if (is_crash(d, s) == 1)   //¹Ø¿¡ ºí·ÏÀÌÀÖÀ¸¸é
+    if (is_crash(d, s) == 1)   //ë°‘ì— ë¸”ë¡ì´ìˆìœ¼ë©´
     {
         r_area_change();
         if (is_GameOver() == -1)
@@ -465,11 +470,11 @@ int block_down(int r, int d, int s)
             change_Ranking();
             return 0;
         }
-        return create_block();  //´ÙÀ½ºí·Ï
+        return create_block();  //ë‹¤ìŒë¸”ë¡
     }
 
-    //¿Ã¹Ù¸¥°ªÀÌ¸é
-    area_change();      //°ú°Å¸¦ ÇöÀç·Î º¯°æ
+    //ì˜¬ë°”ë¥¸ê°’ì´ë©´
+    area_change();      //ê³¼ê±°ë¥¼ í˜„ì¬ë¡œ ë³€ê²½
     print_area();
     time_t start_time = time(NULL);
     while (1)
@@ -481,12 +486,12 @@ int block_down(int r, int d, int s)
 
             receivedLine = 0;
         }
-        int ans = input();      //»ç¿ëÀÚÀÔ·Â¹Ş±â
+        int ans = input();      //ì‚¬ìš©ìì…ë ¥ë°›ê¸°
         if (ans == 1 || ans == -1)
         {
             area_change();
-            area_init(r, d, s);     //ÃÊ±âÈ­
-            s = block_side(r, d, ans + s, ans);  //s°ª ¸®ÅÏ¹Ş±â
+            area_init(r, d, s);     //ì´ˆê¸°í™”
+            s = block_side(r, d, ans + s, ans);  //sê°’ ë¦¬í„´ë°›ê¸°
             area_init(r, d, s);
             hard_drop(d, s);
         }
@@ -508,8 +513,8 @@ int block_down(int r, int d, int s)
                 r_area_change();
                 r_block_change();
             }
-            //¿Ã¹Ù¸¥°ªÀÌ¸é
-            area_change();      //°ú°Å¸¦ ÇöÀç·Î º¯°æ
+            //ì˜¬ë°”ë¥¸ê°’ì´ë©´
+            area_change();      //ê³¼ê±°ë¥¼ í˜„ì¬ë¡œ ë³€ê²½
             area_init(r, d, s);
             hard_drop(d, s);
             print_area();
@@ -517,8 +522,8 @@ int block_down(int r, int d, int s)
         else if (ans == 3)
         {
             score += 1;
-            area_init(r, d, s);   //ÃÊ±âÈ­
-            return block_down(r, d + 1, s);     //d+1·Î ÇÑÄ­¾¿ ³»¸®±â
+            area_init(r, d, s);   //ì´ˆê¸°í™”
+            return block_down(r, d + 1, s);     //d+1ë¡œ í•œì¹¸ì”© ë‚´ë¦¬ê¸°
         }
         else if (ans == 4)
         {
@@ -534,17 +539,43 @@ int block_down(int r, int d, int s)
             print_area();
             create_block();
         }
+        else if (ans == 5)
+        {
+            if (!ishold)
+            {
+                ishold = 1;
+                if (hold == -1)
+                {
+                    hold = r;
+                    area_init(r, d, s);
+                    area_change();
+                    r = minobag1[0];
+                    minobagPush();
+                    isMinobagEmpty();
+                    block_change(r);
+                    hard_drop(0, 0);
+                    return block_down(r, 0, 0);     //ë¸”ë¡ë‚´ë¦¬ê¸°
+                }
+                else
+                {
+                    area_init(r, d, s);
+                    int tmp;
+                    tmp = hold, hold = r, r = tmp;
+                    return block_down(r, 0, 0);
+                }
+            }
+        }
         time_t now_time = time(NULL);
-        if (now_time - start_time >= 1)     //1ÃÊµ¿¾È
+        if (now_time - start_time >= 1)     //1ì´ˆë™ì•ˆ
         {
             break;
         }
     }
-    //¿Ã¹Ù¸¥°ªÀÌ¸é
-    area_change();      //°ú°Å¸¦ ÇöÀç·Î º¯°æ
-    area_init(r, d, s);   //ÃÊ±âÈ­
+    //ì˜¬ë°”ë¥¸ê°’ì´ë©´
+    area_change();      //ê³¼ê±°ë¥¼ í˜„ì¬ë¡œ ë³€ê²½
+    area_init(r, d, s);   //ì´ˆê¸°í™”
     score += 1;
-    return block_down(r, d + 1, s);     //d+1·Î ÇÑÄ­¾¿ ³»¸®±â
+    return block_down(r, d + 1, s);     //d+1ë¡œ í•œì¹¸ì”© ë‚´ë¦¬ê¸°
 }
 
 int block_side(int r, int d, int s, int lr)
@@ -557,15 +588,15 @@ int block_side(int r, int d, int s, int lr)
         }
     }
 
-    if (is_crash(d, s))    //¾ç¿·³¡ ¶Ç´Â ºí·Ï¿¡ ´ê¾Ò´ÂÁö È®ÀÎ
+    if (is_crash(d, s))    //ì–‘ì˜†ë ë˜ëŠ” ë¸”ë¡ì— ë‹¿ì•˜ëŠ”ì§€ í™•ì¸
     {
-        r_area_change();    //´êÀ¸¸é ÀÌÀü°ªÀ¸·Î º¯°æ
+        r_area_change();    //ë‹¿ìœ¼ë©´ ì´ì „ê°’ìœ¼ë¡œ ë³€ê²½
         print_area();
-        return s + (lr * -1);       //(lr*-1) : ¿À¸¥ÂÊ Å° ´­·¶À¸¸é -1 ¿ŞÂÊÅ° ´­·¶À¸¸é +1
+        return s + (lr * -1);       //(lr*-1) : ì˜¤ë¥¸ìª½ í‚¤ ëˆŒë €ìœ¼ë©´ -1 ì™¼ìª½í‚¤ ëˆŒë €ìœ¼ë©´ +1
     }
 
-    area_change();  //¾Æ´Ï¸é °ú°Å¸¦ ÇöÀç·Î ¹Ù²ãÁÖ±â
-    print_area();   //Ãâ·Â
+    area_change();  //ì•„ë‹ˆë©´ ê³¼ê±°ë¥¼ í˜„ì¬ë¡œ ë°”ê¿”ì£¼ê¸°
+    print_area();   //ì¶œë ¥
     return s;
 }
 
@@ -597,7 +628,7 @@ int input()
     int nSelect = 0;
     if (kbhit()) {
         nSelect = getch();
-        if (nSelect == 224) {
+        if (nSelect == 224 || nSelect == 0) {
             nSelect = getch();
             switch (nSelect)
             {
@@ -613,27 +644,9 @@ int input()
         }
         else if (nSelect == 32)
             return 4;
+        else if (nSelect == 'c' || nSelect == 'C')
+            return 5;
     }
-    if (_kbhit())
-    {        //Å°º¸µå ÀÔ·Â È®ÀÎ (true / false)
-        char c = _getch();      // ¹æÇâÅ° ÀÔ·Â½Ã 224 00ÀÌ µé¾î¿À°Ô µÇ±â¿¡ ¾Õ¿¡ ÀÖ´Â °ª 224¸¦ ¾ø¾Ú
-        if (c == -32)
-        {
-            c = _getch();  // »õ·Î ÀÔ·Â°ªÀ» ÆÇº°ÇÏ¿© »óÇÏÁÂ¿ì Ãâ·Â
-            switch (c)
-            {
-            case LEFT:
-                return -1;
-            case RIGHT:
-                return 1;
-            case 72:
-                return 2;
-            case 80:
-                return 3;
-            }
-        }
-    }
-    return 0;
 }
 
 void area_change()
@@ -710,7 +723,7 @@ void rotate_block()
     }
 }
 
-int is_Fullline()
+int is_FullLine()
 {
     int j;
     int empty_cnt;
@@ -747,28 +760,28 @@ int line_down(int d)
             area[i][j] = area[i - 1][j];
         }
     }
-    return is_Fullline();
+    return is_FullLine();
 }
 
 
 void createGarbageLine(int x)
 {
-    if (x == -1) return;  //Å¥¿¡ ÀÖ´Â ¶óÀÎ °ªÀÌ ¾øÀ» ¶§
+    if (x == -1) return;  //íì— ìˆëŠ” ë¼ì¸ ê°’ì´ ì—†ì„ ë•Œ
 
-    for (int i = x; i < AREA_ROW; i++)  //¹ŞÀº Ä­ ¸¸Å­ À§·Î ÀÌµ¿
+    for (int i = x; i < AREA_ROW; i++)  //ë°›ì€ ì¹¸ ë§Œí¼ ìœ„ë¡œ ì´ë™
     {
         for (int j = 1; j < AREA_COL + 1; j++)
         {
             area[i - x][j] = area[i][j];
         }
     }
-    int hall = rand() % 10+1;
-    for (int i = 0; i < x; i++) //¹ŞÀº Ä­ ¸¸Å­ °¡ºñÁö ¶óÀÎ »ı¼º
+    int hall = rand() % 10 + 1;
+    for (int i = 0; i < x; i++) //ë°›ì€ ì¹¸ ë§Œí¼ ê°€ë¹„ì§€ ë¼ì¸ ìƒì„±
     {
         for (int j = 1; j < AREA_COL + 1; j++)
         {
-            if (j==hall) area[AREA_ROW - i - 1][hall] = 0;
-            else area[AREA_ROW - i-1][j] = 4;
+            if (j == hall) area[AREA_ROW - i - 1][hall] = 0;
+            else area[AREA_ROW - i - 1][j] = 8;
         }
     }
 }
@@ -814,7 +827,7 @@ int change_Ranking()
     }
 
     List[0].sco = score;
-    printf("ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä : ");
+    printf("ì´ë¦„ì„ ì…ë ¥í•˜ì„¸ìš” : ");
     scanf(" %s", List[0].name);
     strcat(List[0].name, "\n");
     if (List[0].sco > List[1].sco)
@@ -865,7 +878,7 @@ int print_Ranking()
             acc += strlen(str) + 1;
             if (lines % 2 == 0)
             {
-                printf("\n%dÀ§\n", lines / 2 + 1);
+                printf("\n%dìœ„\n", lines / 2 + 1);
             }
             printf("%s", str);
             lines++;

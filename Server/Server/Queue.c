@@ -20,7 +20,6 @@ int isFull(Queue* queue) {
 // 큐에 원소 추가
 void enqueue(Queue* queue, int item) {
     if (isFull(queue)) {
-        printf("Queue is full. Cannot enqueue.\n");
         return;
     }
 
@@ -38,8 +37,7 @@ void enqueue(Queue* queue, int item) {
 // 큐에서 원소 제거
 int dequeue(Queue* queue) {
     if (isEmpty(queue)) {
-        printf("Queue is empty. Cannot dequeue.\n");
-        return -1; // 예외 처리: 큐가 비어있을 때는 -1을 반환하거나 다른 방식으로 처리할 수 있습니다.
+        return -1;
     }
 
     int item = queue->array[queue->front];
@@ -58,7 +56,6 @@ int dequeue(Queue* queue) {
 // 큐의 front에 있는 원소 반환
 int front(Queue* queue) {
     if (isEmpty(queue)) {
-        printf("Queue is empty.\n");
         return -1; // 예외 처리: 큐가 비어있을 때는 -1을 반환하거나 다른 방식으로 처리할 수 있습니다.
     }
 
@@ -68,7 +65,6 @@ int front(Queue* queue) {
 // 큐의 rear에 있는 원소 반환
 int rear(Queue* queue) {
     if (isEmpty(queue)) {
-        printf("Queue is empty.\n");
         return -1; // 예외 처리: 큐가 비어있을 때는 -1을 반환하거나 다른 방식으로 처리할 수 있습니다.
     }
 
@@ -88,5 +84,4 @@ void printQueue(Queue* queue) {
         printf("%d, ", queue->array[i]);
         i = (i + 1) % MAX_SIZE;
     }
-    printf("%d\n", queue->array[queue->rear]);
 }

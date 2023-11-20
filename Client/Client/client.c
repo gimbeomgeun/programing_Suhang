@@ -288,6 +288,8 @@ int color(int code)
         return DARK_YELLOW;
     case 7:
         return VIOLET;
+    case 8:
+        return GRAY;
     }
 }
 
@@ -405,7 +407,7 @@ int create_block()
     //send(clientSocket, (char*)&cnt, sizeof(int), 0);
     cnt = 0;
     area_change();
-    is_Fullline();
+    is_FullLine();
     createGarbageLine(dequeue(&LineQueue)); //블록 놓을 때 마다 가비지 라인 스택 하나씩 받아와서 생성
     area_change();
     r = minobag1[0];
@@ -585,25 +587,6 @@ int input()
         else if (nSelect == 32)
             return 4;
     }
-    if (_kbhit())
-    {        //키보드 입력 확인 (true / false)
-        char c = _getch();      // 방향키 입력시 224 00이 들어오게 되기에 앞에 있는 값 224를 없앰
-        if (c == -32)
-        {
-            c = _getch();  // 새로 입력값을 판별하여 상하좌우 출력
-            switch (c)
-            {
-            case LEFT:
-                return -1;
-            case RIGHT:
-                return 1;
-            case 72:
-                return 2;
-            case 80:
-                return 3;
-            }
-        }
-    }
     return 0;
 }
 
@@ -681,7 +664,7 @@ void rotate_block()
     }
 }
 
-int is_Fullline()
+int is_FullLine()
 {
     int j;
     int empty_cnt;
@@ -726,7 +709,7 @@ void createGarbageLine(int x)
         for (int j = 1; j < AREA_COL + 1; j++)
         {
             if (j == hall) area[AREA_ROW - i - 1][hall] = 0;
-            else area[AREA_ROW - i - 1][j] = 4;
+            else area[AREA_ROW - i - 1][j] = 8;
         }
     }
 }
@@ -740,7 +723,7 @@ int line_down(int d)
             area[i][j] = area[i - 1][j];
         }
     }
-    return is_Fullline();
+    return is_FullLine();
 }
 
 

@@ -374,14 +374,12 @@ void print_area()
             gotoxy(25, k * 4 + i);
             for (int j = 0; j < BLOCK_COL; j++)
             {
-                if (block[minobag1[k]][i][j] == 0)
+                if (block[minobag1[k]][i][j] != 0)
                 {
-                    printf("□");
-                }
-                else
-                {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color(minobag1[k] + 1));
                     printf("■");
                 }
+                else printf(" ");
             }
             printf("\n");
         }

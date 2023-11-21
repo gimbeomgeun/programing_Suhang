@@ -172,7 +172,7 @@ int main() {
 
     // Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("192.168.123.105"); // Server IP address
+    server.sin_addr.s_addr = inet_addr("192.168.0.76"); // Server IP address
     server.sin_port = htons(8888); // Server port
 
     // Connect to remote server
@@ -343,14 +343,12 @@ void print_area()
             gotoxy(25, k * 4 + i);
             for (int j = 0; j < BLOCK_COL; j++)
             {
-                if (block[minobag1[k]][i][j] == 0)
+                if (block[minobag1[k]][i][j] != 0)
                 {
-                    printf("бр");
-                }
-                else
-                {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color(minobag1[k] + 1));
                     printf("бс");
                 }
+                else printf(" ");
             }
             printf("\n");
         }
